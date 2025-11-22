@@ -110,9 +110,38 @@ nextApp.prepare()
             }
         });
 
-        // Socket.io for multiplayer
+        // Feedback API - Log vehicle corrections
+        app.post('/api/feedback', (req, res) => {
+            try {
+                const { scenarioId, car1, car2 } = req.body;
+                console.log(`[FEEDBACK] Scenario ${scenarioId}:`, { car1, car2 });
+                res.json({ success: true });
+            } catch (error) {
+                console.error('Feedback error:', error);
+                res.status(500).json({ error: 'Failed to save feedback' });
+            }
+        });
+
+        // Remove Video API - Log video removals
+        app.post('/api/remove-video', (req, res) => {
+            try {
+                const { scenarioId, reason } = req.body;
+                console.log(`[REMOVE VIDEO] Scenario ${scenarioId} - Reason: ${reason}`);
+                res.json({ success: true });
+            } catch (error) {
+                console.error('Remove video error:', error);
+                res.status(500).json({ error: 'Failed to remove video' });
+            }
+        });
+
+        // Track online users
+        let onlineUsers = 0;
+
+        // Socket.io for multiplayer and online tracking
         io.on('connection', (socket) => {
             console.log('User connected:', socket.id);
+            onlineUsers++;
+            io.emit('online_users', onlineUsers);
 
             socket.on('create_room', ({ name, totalScenarios }: { name: string, totalScenarios: number }) => {
                 const roomId = generateRoomId();
@@ -205,6 +234,9 @@ nextApp.prepare()
             });
 
             socket.on('disconnect', () => {
+                onlineUsers--;
+                io.emit('online_users', onlineUsers);
+                
                 rooms.forEach((room, roomId) => {
                     const index = room.players.findIndex(p => p.id === socket.id);
                     if (index !== -1) {
