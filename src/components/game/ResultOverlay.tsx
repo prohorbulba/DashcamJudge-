@@ -1,7 +1,7 @@
 'use client';
 
 import { useGameStore } from '@/store/useGameStore';
-import { ArrowRight, Video, AlertTriangle, ThumbsDown } from 'lucide-react';
+import { ArrowRight, Video, AlertTriangle, Bike } from 'lucide-react';
 
 export default function ResultOverlay() {
     const { hasVoted, getCurrentScenario, nextScenario, userVote, votePercentages } = useGameStore();
@@ -69,7 +69,7 @@ export default function ResultOverlay() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-4 mb-2 sm:mb-6">
                 {renderCard('cammer', 'Cammer', Video)}
                 {renderCard('other', 'Other Party', AlertTriangle)}
-                {renderCard('both', 'Biker', ThumbsDown)}
+                {renderCard('both', 'Biker', Bike)}
             </div>
 
             <div className="flex justify-center h-10 sm:h-12">

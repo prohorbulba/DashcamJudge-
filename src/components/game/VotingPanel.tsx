@@ -2,7 +2,7 @@
 
 import { useGameStore } from '@/store/useGameStore';
 import { SCENARIOS } from '@/lib/scenarios';
-import { Video, AlertTriangle, ThumbsDown, ArrowRight } from 'lucide-react';
+import { Video, AlertTriangle, Bike, ArrowRight } from 'lucide-react';
 
 export default function VotingPanel() {
     const { vote, hasVoted, getCurrentScenario } = useGameStore();
@@ -54,7 +54,7 @@ export default function VotingPanel() {
                 className="group relative p-2 sm:p-6 bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/20 rounded-lg sm:rounded-xl hover:bg-yellow-500/20 hover:border-yellow-500/50 transition-all duration-300 ease-out sm:hover:scale-105 h-20 sm:h-44 active:scale-95"
             >
                 <div className="flex flex-col items-center gap-1 sm:gap-3">
-                    <ThumbsDown className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-300" />
+                    <Bike className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-300" />
                     <span className="font-bold text-yellow-100 text-sm sm:text-lg transition-colors duration-300">Biker's Fault</span>
                 </div>
             </button>
