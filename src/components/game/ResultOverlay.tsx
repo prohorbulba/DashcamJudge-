@@ -32,7 +32,7 @@ export default function ResultOverlay() {
         }
 
         return {
-            container: `relative overflow-hidden p-2 sm:p-6 rounded-lg sm:rounded-xl border transition-colors h-20 sm:h-44 ${isUserChoice ? 'ring-2 ring-white bg-white/10' : 'bg-gradient-to-br ' + baseColorClass}`,
+            container: `relative overflow-hidden p-2 sm:p-6 rounded-lg sm:rounded-xl border transition-all duration-500 ease-out h-20 sm:h-44 ${isUserChoice ? 'ring-2 ring-white bg-white/10' : 'bg-gradient-to-br ' + baseColorClass}`,
             icon: iconColorClass,
             percentage
         };
@@ -44,18 +44,18 @@ export default function ResultOverlay() {
             <div className={style.container}>
                 {/* Progress Bar Background */}
                 <div 
-                    className="absolute bottom-0 left-0 h-1.5 bg-current opacity-50 transition-all duration-1000" 
+                    className="absolute bottom-0 left-0 h-1.5 bg-current opacity-50 transition-all duration-1000 ease-out" 
                     style={{ width: `${style.percentage}%`, color: 'inherit' }} 
                 />
                 
                 <div className="flex flex-col items-center gap-1 sm:gap-3 relative z-10">
-                    <Icon className={`w-5 h-5 sm:w-8 sm:h-8 ${style.icon}`} />
-                    <span className="font-bold text-white text-sm sm:text-lg">{label}</span>
+                    <Icon className={`w-5 h-5 sm:w-8 sm:h-8 ${style.icon} transition-all duration-300`} />
+                    <span className="font-bold text-white text-sm sm:text-lg transition-all duration-300">{label}</span>
                     <div className="flex items-baseline gap-1">
-                        <span className="text-xl sm:text-3xl font-black text-white">{style.percentage}%</span>
+                        <span className="text-xl sm:text-3xl font-black text-white transition-all duration-500">{style.percentage}%</span>
                     </div>
                     {userVote === type && (
-                        <span className="text-[10px] sm:text-xs font-medium bg-white text-black px-1.5 py-0.5 sm:px-2 rounded-full mt-0.5 sm:mt-1">
+                        <span className="text-[10px] sm:text-xs font-medium bg-white text-black px-1.5 py-0.5 sm:px-2 rounded-full mt-0.5 sm:mt-1 animate-in fade-in zoom-in duration-300">
                             YOU
                         </span>
                     )}
@@ -65,7 +65,7 @@ export default function ResultOverlay() {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto animate-in fade-in duration-500">
+        <div className="w-full max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-4 mb-2 sm:mb-6">
                 {renderCard('cammer', 'Cammer', Video)}
                 {renderCard('other', 'Other Party', AlertTriangle)}
@@ -75,10 +75,10 @@ export default function ResultOverlay() {
             <div className="flex justify-center h-10 sm:h-12">
                 <button
                     onClick={nextScenario}
-                    className="flex items-center gap-2 px-4 sm:px-8 py-1.5 sm:py-3 bg-white text-black rounded-full font-bold sm:hover:scale-105 transition-colors sm:transition-all shadow-lg shadow-white/20 text-xs sm:text-base"
+                    className="flex items-center gap-2 px-4 sm:px-8 py-1.5 sm:py-3 bg-white text-black rounded-full font-bold sm:hover:scale-105 transition-all duration-300 ease-out shadow-lg shadow-white/20 text-xs sm:text-base active:scale-95"
                 >
                     Next Scenario
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:translate-x-1" />
                 </button>
             </div>
         </div>
