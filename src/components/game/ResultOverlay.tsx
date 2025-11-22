@@ -32,7 +32,7 @@ export default function ResultOverlay() {
         }
 
         return {
-            container: `relative overflow-hidden p-2 sm:p-6 rounded-lg sm:rounded-xl border transition-all h-20 sm:h-44 ${isUserChoice ? 'ring-2 ring-white bg-white/10' : 'bg-gradient-to-br ' + baseColorClass}`,
+            container: `relative overflow-hidden p-2 sm:p-6 rounded-lg sm:rounded-xl border transition-colors h-20 sm:h-44 ${isUserChoice ? 'ring-2 ring-white bg-white/10' : 'bg-gradient-to-br ' + baseColorClass}`,
             icon: iconColorClass,
             percentage
         };
@@ -72,10 +72,10 @@ export default function ResultOverlay() {
                 {renderCard('both', 'Both', ThumbsDown)}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center h-10 sm:h-12">
                 <button
                     onClick={nextScenario}
-                    className="flex items-center gap-2 px-4 sm:px-8 py-1.5 sm:py-3 bg-white text-black rounded-full font-bold hover:scale-105 transition-transform shadow-lg shadow-white/20 text-xs sm:text-base"
+                    className="flex items-center gap-2 px-4 sm:px-8 py-1.5 sm:py-3 bg-white text-black rounded-full font-bold sm:hover:scale-105 transition-colors sm:transition-all shadow-lg shadow-white/20 text-xs sm:text-base"
                 >
                     Next Scenario
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
