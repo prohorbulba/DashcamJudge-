@@ -170,7 +170,7 @@ io.on('connection', (socket) => {
 });
 
 // Handle Next.js requests
-app.all('*', (req, res) => {
+app.use((req, res) => {
     return handle(req, res);
 });
 
