@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "nodemon --watch server --exec ts-node server/index.ts",
     "build": "npm install --legacy-peer-deps && next build && tsc server/index.ts --esModuleInterop --outDir dist-server",
-    "start": "NODE_ENV=production node dist-server/server/index.js",
+    "start": "NODE_ENV=production node dist-server/index.js",
     "lint": "next lint"
   },
   "dependencies": {
