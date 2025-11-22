@@ -180,3 +180,74 @@ server.listen(PORT, () => {
 });
 });
 
+
+// Vote tracking API
+import fs from 'fs';
+import path from 'path';
+
+const votesFilePath = path.join(__dirname, 'votes.json');
+
+// Initialize votes file if it doesn't exist
+if (!fs.existsSync(votesFilePath)) {
+    fs.writeFileSync(votesFilePath, JSON.stringify({}));
+}
+
+app.post('/api/vote', express.json(), (req, res) => {
+    try {
+        const { scenarioId, vote } = req.body;
+        
+        if (!scenarioId || !vote || !['cammer', 'other', 'both'].includes(vote)) {
+            return res.status(400).json({ error: 'Invalid vote data' });
+        }
+
+        // Read current votes
+        const votesData = JSON.parse(fs.readFileSync(votesFilePath, 'utf8'));
+        
+        // Initialize scenario votes if not exists
+        if (!votesData[scenarioId]) {
+            votesData[scenarioId] = { cammer: 0, other: 0, both: 0 };
+        }
+        
+        // Increment vote
+        votesData[scenarioId][vote]++;
+        
+        // Calculate percentages
+        const total = votesData[scenarioId].cammer + votesData[scenarioId].other + votesData[scenarioId].both;
+        const percentages = {
+            cammer: total > 0 ? Math.round((votesData[scenarioId].cammer / total) * 100) : 0,
+            other: total > 0 ? Math.round((votesData[scenarioId].other / total) * 100) : 0,
+            both: total > 0 ? Math.round((votesData[scenarioId].both / total) * 100) : 0
+        };
+        
+        // Save votes
+        fs.writeFileSync(votesFilePath, JSON.stringify(votesData, null, 2));
+        
+        res.json({ success: true, percentages });
+    } catch (error) {
+        console.error('Vote error:', error);
+        res.status(500).json({ error: 'Failed to save vote' });
+    }
+});
+
+app.get('/api/votes/:scenarioId', (req, res) => {
+    try {
+        const { scenarioId } = req.params;
+        const votesData = JSON.parse(fs.readFileSync(votesFilePath, 'utf8'));
+        
+        if (!votesData[scenarioId]) {
+            return res.json({ cammer: 0, other: 0, both: 0 });
+        }
+        
+        const total = votesData[scenarioId].cammer + votesData[scenarioId].other + votesData[scenarioId].both;
+        const percentages = {
+            cammer: total > 0 ? Math.round((votesData[scenarioId].cammer / total) * 100) : 0,
+            other: total > 0 ? Math.round((votesData[scenarioId].other / total) * 100) : 0,
+            both: total > 0 ? Math.round((votesData[scenarioId].both / total) * 100) : 0
+        };
+        
+        res.json(percentages);
+    } catch (error) {
+        console.error('Get votes error:', error);
+        res.status(500).json({ error: 'Failed to get votes' });
+    }
+});

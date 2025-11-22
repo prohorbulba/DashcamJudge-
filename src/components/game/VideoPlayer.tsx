@@ -20,6 +20,18 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
 
     useEffect(() => {
         setIsPlaying(false);
+        // Auto-play on desktop
+        if (videoRef.current && !isPlaying) {
+            const playPromise = videoRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => setIsPlaying(true))
+                    .catch((error) => {
+                        // Auto-play was prevented, show play button
+                        console.log('Autoplay prevented:', error);
+                    });
+            }
+        }
     }, [scenario.id]);
 
     const handlePlayClick = () => {
@@ -48,6 +60,8 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
                         className="w-full h-full object-contain"
                         playsInline
                         loop
+                        muted
+                        autoPlay
                         disablePictureInPicture
                         controlsList="nodownload nofullscreen"
                         onPlay={() => setIsPlaying(true)}
