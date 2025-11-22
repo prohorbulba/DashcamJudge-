@@ -6,6 +6,8 @@ import VideoPlayer from '@/components/game/VideoPlayer';
 import VotingPanel from '@/components/game/VotingPanel';
 import ResultOverlay from '@/components/game/ResultOverlay';
 import FeedbackButton from '@/components/game/FeedbackButton';
+import OnlineUsersTracker from '@/components/OnlineUsersTracker';
+import ReactionButtons from '@/components/game/ReactionButtons';
 
 export default function Home() {
     const shuffleScenarios = useGameStore((state) => state.shuffleScenarios);
@@ -22,7 +24,8 @@ export default function Home() {
                     <div className="flex items-center gap-2 sm:gap-3">
                         <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight uppercase">Dashcam Judge</h1>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <OnlineUsersTracker />
                         <FeedbackButton />
                         <div className="text-xs sm:text-sm text-gray-500 uppercase">
                             v1.0
@@ -44,6 +47,9 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+
+            {/* Reaction Buttons - Fixed position bottom right */}
+            <ReactionButtons />
         </main>
     );
 }
