@@ -9,13 +9,13 @@ export default function ResultOverlay() {
 
     if (!hasVoted) return null;
 
-    // Use server percentages if available, fallback to 0
-    const percentages = votePercentages || { cammer: 0, other: 0, both: 0 };
+    // Get percentages from store (fetched from backend) or default to 0
+    const percentages = votePercentages[scenario.id] || { cammer: 0, other: 0, both: 0 };
 
     // Helper to determine styling based on the result type
     const getResultStyle = (type: 'cammer' | 'other' | 'both') => {
         const isUserChoice = userVote === type;
-        const percentage = percentages[type];
+        const percentage = Number(percentages[type]) || 0;
         
         let baseColorClass = '';
         let iconColorClass = '';
@@ -32,7 +32,7 @@ export default function ResultOverlay() {
         }
 
         return {
-            container: `relative overflow-hidden p-4 sm:p-6 rounded-xl border transition-all h-32 sm:h-44 ${isUserChoice ? 'ring-2 ring-white bg-white/10' : 'bg-gradient-to-br ' + baseColorClass}`,
+            container: `relative overflow-hidden p-2 sm:p-6 rounded-lg sm:rounded-xl border transition-all h-20 sm:h-44 ${isUserChoice ? 'ring-2 ring-white bg-white/10' : 'bg-gradient-to-br ' + baseColorClass}`,
             icon: iconColorClass,
             percentage
         };
@@ -48,14 +48,14 @@ export default function ResultOverlay() {
                     style={{ width: `${style.percentage}%`, color: 'inherit' }} 
                 />
                 
-                <div className="flex flex-col items-center gap-2 sm:gap-3 relative z-10">
-                    <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${style.icon}`} />
-                    <span className="font-bold text-white text-base sm:text-lg">{label}</span>
+                <div className="flex flex-col items-center gap-1 sm:gap-3 relative z-10">
+                    <Icon className={`w-5 h-5 sm:w-8 sm:h-8 ${style.icon}`} />
+                    <span className="font-bold text-white text-sm sm:text-lg">{label}</span>
                     <div className="flex items-baseline gap-1">
-                        <span className="text-2xl sm:text-3xl font-black text-white">{style.percentage}%</span>
+                        <span className="text-xl sm:text-3xl font-black text-white">{style.percentage}%</span>
                     </div>
                     {userVote === type && (
-                        <span className="text-xs font-medium bg-white text-black px-2 py-0.5 rounded-full mt-1">
+                        <span className="text-[10px] sm:text-xs font-medium bg-white text-black px-1.5 py-0.5 sm:px-2 rounded-full mt-0.5 sm:mt-1">
                             YOU
                         </span>
                     )}
@@ -66,7 +66,7 @@ export default function ResultOverlay() {
 
     return (
         <div className="w-full max-w-4xl mx-auto animate-in fade-in duration-500">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-4 mb-2 sm:mb-6">
                 {renderCard('cammer', 'Cammer', Video)}
                 {renderCard('other', 'Other Party', AlertTriangle)}
                 {renderCard('both', 'Both', ThumbsDown)}
@@ -75,10 +75,10 @@ export default function ResultOverlay() {
             <div className="flex justify-center">
                 <button
                     onClick={nextScenario}
-                    className="flex items-center gap-2 px-6 sm:px-8 py-2 sm:py-3 bg-white text-black rounded-full font-bold hover:scale-105 transition-transform shadow-lg shadow-white/20 text-sm sm:text-base"
+                    className="flex items-center gap-2 px-4 sm:px-8 py-1.5 sm:py-3 bg-white text-black rounded-full font-bold hover:scale-105 transition-transform shadow-lg shadow-white/20 text-xs sm:text-base"
                 >
                     Next Scenario
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
             </div>
         </div>
