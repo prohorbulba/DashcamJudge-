@@ -1,254 +1,177 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageSquare, X, Flag, Trash2 } from 'lucide-react';
 import { useGameStore } from '@/store/useGameStore';
+import { MessageCircle, X } from 'lucide-react';
 
 const COLORS = ['Red', 'Blue', 'White', 'Black', 'Silver', 'Gray', 'Green', 'Yellow', 'Orange', 'Brown', 'Purple', 'Other'];
 const TYPES = ['Sedan', 'SUV', 'Truck', 'Van', 'Motorcycle', 'Bicycle', 'Pedestrian', 'Other'];
+const REMOVE_REASONS = ['Boring', 'Too Long', 'Poor Quality', 'Inappropriate'];
 
 export default function FeedbackButton() {
     const [isOpen, setIsOpen] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
-    const [feedbackType, setFeedbackType] = useState<'correction' | 'report' | null>(null);
     const scenario = useGameStore((state) => state.getCurrentScenario());
     
     const [car1Color, setCar1Color] = useState('');
     const [car1Type, setCar1Type] = useState('');
     const [car2Color, setCar2Color] = useState('');
     const [car2Type, setCar2Type] = useState('');
-    const [reportReason, setReportReason] = useState('');
 
-    const handleCorrection = () => {
-        console.log('Correction for scenario', scenario.id, {
-            type: 'correction',
+    const handleSubmit = () => {
+        console.log('Feedback submitted:', {
+            scenarioId: scenario.id,
             car1: { color: car1Color, type: car1Type },
             car2: { color: car2Color, type: car2Type }
         });
-        setSubmitted(true);
-        resetAndClose();
+        setIsOpen(false);
+        setCar1Color('');
+        setCar1Type('');
+        setCar2Color('');
+        setCar2Type('');
     };
 
-    const handleReport = (reason: string) => {
-        console.log('Report for scenario', scenario.id, {
-            type: 'report',
-            reason: reason
+    const handleRemove = (reason: string) => {
+        console.log('Remove video:', {
+            scenarioId: scenario.id,
+            reason
         });
-        setReportReason(reason);
-        setSubmitted(true);
-        resetAndClose();
-    };
-
-    const resetAndClose = () => {
-        setTimeout(() => {
-            setIsOpen(false);
-            setSubmitted(false);
-            setFeedbackType(null);
-            setCar1Color('');
-            setCar1Type('');
-            setCar2Color('');
-            setCar2Type('');
-            setReportReason('');
-        }, 2000);
+        setIsOpen(false);
     };
 
     return (
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all text-sm"
+                className="hidden md:flex items-center gap-2 px-4 py-2 bg-zinc-900/80 border border-white/20 rounded-lg hover:bg-zinc-800 transition-colors"
             >
-                <MessageSquare className="w-4 h-4" />
+                <MessageCircle className="w-4 h-4" />
                 Suggest Correction
             </button>
 
             {isOpen && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-zinc-900 border border-white/20 rounded-2xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
+                    <div className="bg-zinc-900 border border-white/20 rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold">Correct Vehicle Info</h2>
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <p className="text-sm text-gray-400 mb-6">Update the vehicles involved</p>
+
+                        {/* Car 1 */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold mb-3">Car 1</h3>
+                            
+                            <div className="mb-4">
+                                <label className="text-sm text-gray-400 mb-2 block">Color</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {COLORS.map((color) => (
+                                        <button
+                                            key={color}
+                                            onClick={() => setCar1Color(color)}
+                                            className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                                                car1Color === color
+                                                    ? 'bg-white text-black'
+                                                    : 'bg-zinc-800 hover:bg-zinc-700'
+                                            }`}
+                                        >
+                                            {color}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-sm text-gray-400 mb-2 block">Type</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {TYPES.map((type) => (
+                                        <button
+                                            key={type}
+                                            onClick={() => setCar1Type(type)}
+                                            className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                                                car1Type === type
+                                                    ? 'bg-white text-black'
+                                                    : 'bg-zinc-800 hover:bg-zinc-700'
+                                            }`}
+                                        >
+                                            {type}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Car 2 */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold mb-3">Car 2</h3>
+                            
+                            <div className="mb-4">
+                                <label className="text-sm text-gray-400 mb-2 block">Color</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {COLORS.map((color) => (
+                                        <button
+                                            key={color}
+                                            onClick={() => setCar2Color(color)}
+                                            className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                                                car2Color === color
+                                                    ? 'bg-white text-black'
+                                                    : 'bg-zinc-800 hover:bg-zinc-700'
+                                            }`}
+                                        >
+                                            {color}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-sm text-gray-400 mb-2 block">Type</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {TYPES.map((type) => (
+                                        <button
+                                            key={type}
+                                            onClick={() => setCar2Type(type)}
+                                            className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                                                car2Type === type
+                                                    ? 'bg-white text-black'
+                                                    : 'bg-zinc-800 hover:bg-zinc-700'
+                                            }`}
+                                        >
+                                            {type}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
                         <button
-                            onClick={() => {
-                                setIsOpen(false);
-                                setFeedbackType(null);
-                            }}
-                            className="absolute top-4 right-4 text-white/60 hover:text-white"
+                            onClick={handleSubmit}
+                            className="w-full py-3 bg-white text-black rounded-lg font-bold hover:bg-gray-200 transition-colors mb-4"
                         >
-                            <X className="w-5 h-5" />
+                            Submit Correction
                         </button>
 
-                        {!submitted ? (
-                            <>
-                                {!feedbackType ? (
-                                    <>
-                                        <h2 className="text-xl font-bold mb-2">Feedback</h2>
-                                        <p className="text-sm text-white/60 mb-6">
-                                            Choose what you'd like to report
-                                        </p>
-
-                                        <div className="grid grid-cols-1 gap-3">
-                                            <button
-                                                onClick={() => setFeedbackType('correction')}
-                                                className="flex items-center gap-3 p-4 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-lg transition-all text-left"
-                                            >
-                                                <MessageSquare className="w-5 h-5 text-blue-400" />
-                                                <div>
-                                                    <div className="font-bold">Correct Vehicle Info</div>
-                                                    <div className="text-xs text-white/60">Fix car colors or types</div>
-                                                </div>
-                                            </button>
-
-                                            <button
-                                                onClick={() => handleReport('boring')}
-                                                className="flex items-center gap-3 p-4 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/30 rounded-lg transition-all text-left"
-                                            >
-                                                <Trash2 className="w-5 h-5 text-yellow-400" />
-                                                <div>
-                                                    <div className="font-bold">Remove: Boring</div>
-                                                    <div className="text-xs text-white/60">Nothing interesting happens</div>
-                                                </div>
-                                            </button>
-
-                                            <button
-                                                onClick={() => handleReport('too_long')}
-                                                className="flex items-center gap-3 p-4 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 rounded-lg transition-all text-left"
-                                            >
-                                                <Trash2 className="w-5 h-5 text-orange-400" />
-                                                <div>
-                                                    <div className="font-bold">Remove: Too Long</div>
-                                                    <div className="text-xs text-white/60">Video is too long (over 25s)</div>
-                                                </div>
-                                            </button>
-
-                                            <button
-                                                onClick={() => handleReport('poor_quality')}
-                                                className="flex items-center gap-3 p-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg transition-all text-left"
-                                            >
-                                                <Trash2 className="w-5 h-5 text-red-400" />
-                                                <div>
-                                                    <div className="font-bold">Remove: Poor Quality</div>
-                                                    <div className="text-xs text-white/60">Can't see what's happening</div>
-                                                </div>
-                                            </button>
-
-                                            <button
-                                                onClick={() => handleReport('inappropriate')}
-                                                className="flex items-center gap-3 p-4 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 rounded-lg transition-all text-left"
-                                            >
-                                                <Flag className="w-5 h-5 text-purple-400" />
-                                                <div>
-                                                    <div className="font-bold">Flag: Inappropriate</div>
-                                                    <div className="text-xs text-white/60">Content violation</div>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </>
-                                ) : feedbackType === 'correction' ? (
-                                    <>
-                                        <button
-                                            onClick={() => setFeedbackType(null)}
-                                            className="text-sm text-white/60 hover:text-white mb-4"
-                                        >
-                                            ← Back
-                                        </button>
-                                        <h2 className="text-xl font-bold mb-2">Correct Vehicle Info</h2>
-                                        <p className="text-sm text-white/60 mb-6">
-                                            Update the vehicles involved
-                                        </p>
-
-                                        {/* Car 1 */}
-                                        <div className="mb-6">
-                                            <h3 className="font-bold mb-3">Car 1 (Cammer/First Party)</h3>
-                                            
-                                            <label className="block text-sm mb-2">Color</label>
-                                            <div className="grid grid-cols-4 gap-2 mb-4">
-                                                {COLORS.map(color => (
-                                                    <button
-                                                        key={color}
-                                                        onClick={() => setCar1Color(color)}
-                                                        className={`px-3 py-2 rounded-lg border transition-all text-sm ${
-                                                            car1Color === color 
-                                                                ? 'bg-blue-500 border-blue-400 text-white' 
-                                                                : 'bg-white/5 border-white/10 hover:bg-white/10'
-                                                        }`}
-                                                    >
-                                                        {color}
-                                                    </button>
-                                                ))}
-                                            </div>
-
-                                            <label className="block text-sm mb-2">Type</label>
-                                            <div className="grid grid-cols-4 gap-2">
-                                                {TYPES.map(type => (
-                                                    <button
-                                                        key={type}
-                                                        onClick={() => setCar1Type(type)}
-                                                        className={`px-3 py-2 rounded-lg border transition-all text-sm ${
-                                                            car1Type === type 
-                                                                ? 'bg-blue-500 border-blue-400 text-white' 
-                                                                : 'bg-white/5 border-white/10 hover:bg-white/10'
-                                                        }`}
-                                                    >
-                                                        {type}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Car 2 */}
-                                        <div className="mb-6">
-                                            <h3 className="font-bold mb-3">Car 2 (Other Party)</h3>
-                                            
-                                            <label className="block text-sm mb-2">Color</label>
-                                            <div className="grid grid-cols-4 gap-2 mb-4">
-                                                {COLORS.map(color => (
-                                                    <button
-                                                        key={color}
-                                                        onClick={() => setCar2Color(color)}
-                                                        className={`px-3 py-2 rounded-lg border transition-all text-sm ${
-                                                            car2Color === color 
-                                                                ? 'bg-red-500 border-red-400 text-white' 
-                                                                : 'bg-white/5 border-white/10 hover:bg-white/10'
-                                                        }`}
-                                                    >
-                                                        {color}
-                                                    </button>
-                                                ))}
-                                            </div>
-
-                                            <label className="block text-sm mb-2">Type</label>
-                                            <div className="grid grid-cols-4 gap-2">
-                                                {TYPES.map(type => (
-                                                    <button
-                                                        key={type}
-                                                        onClick={() => setCar2Type(type)}
-                                                        className={`px-3 py-2 rounded-lg border transition-all text-sm ${
-                                                            car2Type === type 
-                                                                ? 'bg-red-500 border-red-400 text-white' 
-                                                                : 'bg-white/5 border-white/10 hover:bg-white/10'
-                                                        }`}
-                                                    >
-                                                        {type}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            onClick={handleCorrection}
-                                            disabled={!car1Color || !car1Type || !car2Color || !car2Type}
-                                            className="w-full mt-4 px-4 py-3 bg-white text-black font-bold rounded-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                        >
-                                            Submit Correction
-                                        </button>
-                                    </>
-                                ) : null}
-                            </>
-                        ) : (
-                            <div className="text-center py-8">
-                                <div className="text-4xl mb-2">✓</div>
-                                <h3 className="text-xl font-bold mb-1">Thank you!</h3>
-                                <p className="text-sm text-white/60">Your feedback has been recorded.</p>
+                        {/* Remove Video Section */}
+                        <div className="pt-4 border-t border-white/20">
+                            <p className="text-sm text-gray-400 mb-3">Remove Video</p>
+                            <div className="grid grid-cols-2 gap-2">
+                                {REMOVE_REASONS.map((reason) => (
+                                    <button
+                                        key={reason}
+                                        onClick={() => handleRemove(reason)}
+                                        className="px-3 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 rounded-lg text-sm transition-colors"
+                                    >
+                                        {reason}
+                                    </button>
+                                ))}
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             )}
