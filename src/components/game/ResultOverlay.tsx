@@ -4,15 +4,18 @@ import { useGameStore } from '@/store/useGameStore';
 import { ArrowRight, Video, AlertTriangle, ThumbsDown } from 'lucide-react';
 
 export default function ResultOverlay() {
-    const { hasVoted, getCurrentScenario, nextScenario, userVote } = useGameStore();
+    const { hasVoted, getCurrentScenario, nextScenario, userVote, votePercentages } = useGameStore();
     const scenario = getCurrentScenario();
 
     if (!hasVoted) return null;
 
+    // Use server percentages if available, fallback to 0
+    const percentages = votePercentages || { cammer: 0, other: 0, both: 0 };
+
     // Helper to determine styling based on the result type
     const getResultStyle = (type: 'cammer' | 'other' | 'both') => {
         const isUserChoice = userVote === type;
-        const percentage = scenario.votes[type];
+        const percentage = percentages[type];
         
         let baseColorClass = '';
         let iconColorClass = '';
@@ -29,7 +32,7 @@ export default function ResultOverlay() {
         }
 
         return {
-            container: `relative overflow-hidden p-6 rounded-xl border transition-all h-44 ${isUserChoice ? 'ring-2 ring-white bg-white/10' : 'bg-gradient-to-br ' + baseColorClass}`,
+            container: `relative overflow-hidden p-4 sm:p-6 rounded-xl border transition-all h-32 sm:h-44 ${isUserChoice ? 'ring-2 ring-white bg-white/10' : 'bg-gradient-to-br ' + baseColorClass}`,
             icon: iconColorClass,
             percentage
         };
@@ -45,11 +48,11 @@ export default function ResultOverlay() {
                     style={{ width: `${style.percentage}%`, color: 'inherit' }} 
                 />
                 
-                <div className="flex flex-col items-center gap-3 relative z-10">
-                    <Icon className={`w-8 h-8 ${style.icon}`} />
-                    <span className="font-bold text-white text-lg">{label}</span>
+                <div className="flex flex-col items-center gap-2 sm:gap-3 relative z-10">
+                    <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${style.icon}`} />
+                    <span className="font-bold text-white text-base sm:text-lg">{label}</span>
                     <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-black text-white">{style.percentage}%</span>
+                        <span className="text-2xl sm:text-3xl font-black text-white">{style.percentage}%</span>
                     </div>
                     {userVote === type && (
                         <span className="text-xs font-medium bg-white text-black px-2 py-0.5 rounded-full mt-1">
@@ -72,7 +75,7 @@ export default function ResultOverlay() {
             <div className="flex justify-center">
                 <button
                     onClick={nextScenario}
-                    className="flex items-center gap-2 px-8 py-3 bg-white text-black rounded-full font-bold hover:scale-105 transition-transform shadow-lg shadow-white/20"
+                    className="flex items-center gap-2 px-6 sm:px-8 py-2 sm:py-3 bg-white text-black rounded-full font-bold hover:scale-105 transition-transform shadow-lg shadow-white/20 text-sm sm:text-base"
                 >
                     Next Scenario
                     <ArrowRight className="w-5 h-5" />

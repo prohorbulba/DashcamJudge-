@@ -2,11 +2,9 @@
 
 import { useGameStore } from '@/store/useGameStore';
 import { useState, useRef, useEffect } from 'react';
-import { Play } from 'lucide-react';
 
 export default function VideoPlayer({ className = "" }: { className?: string }) {
     const scenario = useGameStore((state) => state.getCurrentScenario());
-    const [isPlaying, setIsPlaying] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
     // Check if it's a YouTube link
@@ -19,27 +17,16 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
     };
 
     useEffect(() => {
-        setIsPlaying(false);
-        // Auto-play on desktop
-        if (videoRef.current && !isPlaying) {
+        // Attempt autoplay on scenario change
+        if (videoRef.current) {
             const playPromise = videoRef.current.play();
             if (playPromise !== undefined) {
-                playPromise
-                    .then(() => setIsPlaying(true))
-                    .catch((error) => {
-                        // Auto-play was prevented, show play button
-                        console.log('Autoplay prevented:', error);
-                    });
+                playPromise.catch((error) => {
+                    console.log('Autoplay prevented by browser:', error);
+                });
             }
         }
     }, [scenario.id]);
-
-    const handlePlayClick = () => {
-        if (videoRef.current) {
-            videoRef.current.play();
-            setIsPlaying(true);
-        }
-    };
 
     return (
         <div className={`bg-black rounded-lg sm:rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative group ${className}`}>
@@ -52,36 +39,22 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
                     allowFullScreen
                 />
             ) : (
-                <>
-                    <video
-                        ref={videoRef}
-                        key={scenario.id}
-                        src={scenario.videoUrl}
-                        className="w-full h-full object-contain"
-                        playsInline
-                        loop
-                        muted
-                        autoPlay
-                        disablePictureInPicture
-                        controlsList="nodownload nofullscreen"
-                        onPlay={() => setIsPlaying(true)}
-                        onPause={() => setIsPlaying(false)}
-                        style={{
-                            maxWidth: '100%',
-                            maxHeight: '100%'
-                        }}
-                    />
-                    {!isPlaying && (
-                        <div 
-                            className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-pointer z-10"
-                            onClick={handlePlayClick}
-                        >
-                            <div className="bg-white/90 rounded-full p-6 sm:p-8 hover:bg-white transition-all hover:scale-110">
-                                <Play className="w-12 h-12 sm:w-16 sm:h-16 text-black fill-black" />
-                            </div>
-                        </div>
-                    )}
-                </>
+                <video
+                    ref={videoRef}
+                    key={scenario.id}
+                    src={scenario.videoUrl}
+                    className="w-full h-full object-contain"
+                    controls
+                    autoPlay
+                    playsInline
+                    loop
+                    disablePictureInPicture
+                    controlsList="nodownload nofullscreen"
+                    style={{
+                        maxWidth: '100%',
+                        maxHeight: '100%'
+                    }}
+                />
             )}
         </div>
     );
