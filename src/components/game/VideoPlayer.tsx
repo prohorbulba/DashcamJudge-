@@ -46,12 +46,16 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
                         key={scenario.id}
                         src={scenario.videoUrl}
                         className="w-full h-full object-contain"
-                        controls
                         playsInline
                         loop
-                        webkit-playsinline="true"
+                        disablePictureInPicture
+                        controlsList="nodownload nofullscreen"
                         onPlay={() => setIsPlaying(true)}
                         onPause={() => setIsPlaying(false)}
+                        style={{
+                            maxWidth: '100%',
+                            maxHeight: '100%'
+                        }}
                     />
                     {!isPlaying && (
                         <div 
