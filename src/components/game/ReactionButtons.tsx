@@ -32,15 +32,15 @@ export default function ReactionButtons() {
                 <button
                     key={emoji}
                     onClick={() => handleReaction(emoji)}
-                    className={`group relative w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900/80 backdrop-blur-sm border border-white/20 rounded-full hover:scale-110 transition-all shadow-lg flex items-center justify-center ${
+                    className={`group relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-zinc-900/80 backdrop-blur-sm border border-white/20 rounded-full hover:scale-110 transition-all shadow-lg flex items-center justify-center ${
                         selectedReaction === emoji ? 'scale-125 ring-2 ring-white' : ''
                     }`}
                     title={label}
                 >
-                    <span className="text-2xl sm:text-3xl">{emoji}</span>
+                    <span className="text-xl sm:text-2xl md:text-3xl">{emoji}</span>
                     
-                    {/* Tooltip on hover */}
-                    <div className="absolute right-full mr-2 px-3 py-1 bg-zinc-900 border border-white/20 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    {/* Tooltip on hover - hidden on mobile */}
+                    <div className="hidden md:block absolute right-full mr-2 px-3 py-1 bg-zinc-900 border border-white/20 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         {label}
                     </div>
                 </button>
