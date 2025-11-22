@@ -1,9 +1,13 @@
 'use client';
 
 import { useGameStore } from '@/store/useGameStore';
+import { useState, useRef, useEffect } from 'react';
+import { Play } from 'lucide-react';
 
 export default function VideoPlayer({ className = "" }: { className?: string }) {
     const scenario = useGameStore((state) => state.getCurrentScenario());
+    const [isPlaying, setIsPlaying] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
     // Check if it's a YouTube link
     const isYouTube = scenario.videoUrl.includes('youtube.com') || scenario.videoUrl.includes('youtu.be');
@@ -12,6 +16,17 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
     const getYouTubeId = (url: string) => {
         const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
         return match ? match[1] : null;
+    };
+
+    useEffect(() => {
+        setIsPlaying(false);
+    }, [scenario.id]);
+
+    const handlePlayClick = () => {
+        if (videoRef.current) {
+            videoRef.current.play();
+            setIsPlaying(true);
+        }
     };
 
     return (
@@ -25,22 +40,30 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
                     allowFullScreen
                 />
             ) : (
-                <video
-                    key={scenario.id}
-                    src={scenario.videoUrl}
-                    className="w-full h-full object-contain"
-                    controls
-                    autoPlay
-                    playsInline
-                    muted
-                    loop
-                    onClick={(e) => {
-                        const video = e.currentTarget;
-                        if (video.paused) {
-                            video.play();
-                        }
-                    }}
-                />
+                <>
+                    <video
+                        ref={videoRef}
+                        key={scenario.id}
+                        src={scenario.videoUrl}
+                        className="w-full h-full object-contain"
+                        controls
+                        playsInline
+                        loop
+                        webkit-playsinline="true"
+                        onPlay={() => setIsPlaying(true)}
+                        onPause={() => setIsPlaying(false)}
+                    />
+                    {!isPlaying && (
+                        <div 
+                            className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-pointer z-10"
+                            onClick={handlePlayClick}
+                        >
+                            <div className="bg-white/90 rounded-full p-6 sm:p-8 hover:bg-white transition-all hover:scale-110">
+                                <Play className="w-12 h-12 sm:w-16 sm:h-16 text-black fill-black" />
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
