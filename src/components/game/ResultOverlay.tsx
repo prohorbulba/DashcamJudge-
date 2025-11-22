@@ -69,7 +69,7 @@ export default function ResultOverlay() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-4 mb-2 sm:mb-6">
                 {renderCard('cammer', 'Cammer', Video)}
                 {renderCard('other', 'Other Party', AlertTriangle)}
-                {renderCard('both', 'Both', ThumbsDown)}
+                {renderCard('both', 'Biker', ThumbsDown)}
             </div>
 
             <div className="flex justify-center h-10 sm:h-12">

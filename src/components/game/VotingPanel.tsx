@@ -2,7 +2,7 @@
 
 import { useGameStore } from '@/store/useGameStore';
 import { SCENARIOS } from '@/lib/scenarios';
-import { Video, AlertTriangle, ThumbsDown } from 'lucide-react';
+import { Video, AlertTriangle, ThumbsDown, ArrowRight } from 'lucide-react';
 
 export default function VotingPanel() {
     const { vote, hasVoted, getCurrentScenario } = useGameStore();
@@ -55,16 +55,19 @@ export default function VotingPanel() {
             >
                 <div className="flex flex-col items-center gap-1 sm:gap-3">
                     <ThumbsDown className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-300" />
-                    <span className="font-bold text-yellow-100 text-sm sm:text-lg transition-colors duration-300">Both at Fault</span>
+                    <span className="font-bold text-yellow-100 text-sm sm:text-lg transition-colors duration-300">Biker's Fault</span>
                 </div>
             </button>
             </div>
             
-            {/* Placeholder for Next Scenario button to prevent layout shift */}
-            <div className="flex justify-center invisible select-none h-10 sm:h-12">
-                <button className="flex items-center gap-2 px-4 sm:px-8 py-1.5 sm:py-3 bg-transparent text-transparent border border-transparent rounded-full font-bold text-xs sm:text-base">
+            {/* Grey "Next Scenario" button before vote */}
+            <div className="flex justify-center h-10 sm:h-12">
+                <button 
+                    disabled
+                    className="flex items-center gap-2 px-4 sm:px-8 py-1.5 sm:py-3 bg-gray-600 text-gray-400 rounded-full font-bold text-xs sm:text-base cursor-not-allowed opacity-50"
+                >
                     Next Scenario
-                    <div className="w-4 h-4 sm:w-5 sm:h-5" /> 
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
             </div>
         </div>
