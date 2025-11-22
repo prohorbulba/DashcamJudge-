@@ -15,7 +15,7 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
     };
 
     return (
-        <div className={`bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative group ${className}`}>
+        <div className={`bg-black rounded-lg sm:rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative group ${className}`}>
             {isYouTube ? (
                 <iframe
                     key={scenario.id}
@@ -31,7 +31,15 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
                     className="w-full h-full object-contain"
                     controls
                     autoPlay
+                    playsInline
+                    muted
                     loop
+                    onClick={(e) => {
+                        const video = e.currentTarget;
+                        if (video.paused) {
+                            video.play();
+                        }
+                    }}
                 />
             )}
         </div>

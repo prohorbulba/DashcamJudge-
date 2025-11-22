@@ -30,7 +30,7 @@ export default function Home() {
                 {/* Content Area - Fills remaining space */}
                 <div className="flex-1 flex flex-col min-h-0 gap-2 sm:gap-4">
                     {/* Video Container - Takes all available space */}
-                    <div className="flex-1 min-h-0 relative bg-zinc-900/50 rounded-lg sm:rounded-2xl border border-white/10 overflow-hidden">
+                    <div className="flex-1 min-h-0 relative aspect-video sm:aspect-auto bg-zinc-900/50 rounded-lg sm:rounded-2xl border border-white/10 overflow-hidden">
                         <VideoPlayer className="absolute inset-0 w-full h-full" />
                     </div>
 
