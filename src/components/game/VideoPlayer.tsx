@@ -1,29 +1,24 @@
 'use client';
 
 import { useGameStore } from '@/store/useGameStore';
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
 export default function VideoPlayer({ className = "" }: { className?: string }) {
     const scenario = useGameStore((state) => state.getCurrentScenario());
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // Check if it's a YouTube link
     const isYouTube = scenario.videoUrl.includes('youtube.com') || scenario.videoUrl.includes('youtu.be');
 
-    // Extract YouTube video ID
     const getYouTubeId = (url: string) => {
         const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
         return match ? match[1] : null;
     };
 
     useEffect(() => {
-        // Attempt autoplay on scenario change
         if (videoRef.current) {
             const playPromise = videoRef.current.play();
             if (playPromise !== undefined) {
-                playPromise.catch((error) => {
-                    console.log('Autoplay prevented by browser:', error);
-                });
+                playPromise.catch(() => {});
             }
         }
     }, [scenario.id]);
@@ -50,10 +45,6 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
                     loop
                     disablePictureInPicture
                     controlsList="nodownload nofullscreen"
-                    style={{
-                        maxWidth: '100%',
-                        maxHeight: '100%'
-                    }}
                 />
             )}
         </div>
