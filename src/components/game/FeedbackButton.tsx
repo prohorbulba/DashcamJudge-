@@ -23,28 +23,42 @@ export default function FeedbackButton() {
     const [car2IsCammer, setCar2IsCammer] = useState(false);
 
     const handleCar1Cammer = () => {
-        setCar1IsCammer(true);
-        setCar1Color('N/A');
-        setCar1Type('Witness');
-        setCar2IsCammer(false);
+        if (car1IsCammer) {
+            // Unclick - reset to empty
+            setCar1IsCammer(false);
+            setCar1Color('');
+            setCar1Type('');
+        } else {
+            // Click - set as cammer
+            setCar1IsCammer(true);
+            setCar1Color('N/A');
+            setCar1Type('Witness');
+            setCar2IsCammer(false);
+        }
     };
 
     const handleCar2Cammer = () => {
-        setCar2IsCammer(true);
-        setCar2Color('N/A');
-        setCar2Type('Witness');
-        setCar1IsCammer(false);
+        if (car2IsCammer) {
+            // Unclick - reset to empty
+            setCar2IsCammer(false);
+            setCar2Color('');
+            setCar2Type('');
+        } else {
+            // Click - set as cammer
+            setCar2IsCammer(true);
+            setCar2Color('N/A');
+            setCar2Type('Witness');
+            setCar1IsCammer(false);
+        }
     };
 
     const handleSubmit = () => {
-        // Apply changes instantly
         if ((car1Color && car1Type) && (car2Color && car2Type)) {
             updateVehicleInfo(scenario.id, 
                 { color: car1Color, type: car1Type },
                 { color: car2Color, type: car2Type }
             );
             
-            // Also send to backend to persist
             fetch('/api/feedback', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -66,7 +80,6 @@ export default function FeedbackButton() {
     };
 
     const handleRemove = (reason: string) => {
-        // Instantly remove the video
         removeVideo(scenario.id, reason);
         setIsOpen(false);
     };
@@ -82,52 +95,48 @@ export default function FeedbackButton() {
             </button>
 
             {isOpen && (
-                <div className="fixed inset-y-0 right-0 w-96 bg-zinc-900 border-l border-white/20 z-50 overflow-y-auto shadow-2xl">
-                    <div className="p-6">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold">Correct Vehicle Info</h2>
+                <div className="fixed inset-y-0 right-0 w-80 bg-zinc-900 border-l border-white/20 z-50 flex flex-col shadow-2xl">
+                    {/* Header - Fixed */}
+                    <div className="flex-none p-4 border-b border-white/20">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-lg font-bold">Correct Vehicles</h2>
                             <button
                                 onClick={() => setIsOpen(false)}
                                 className="p-1 hover:bg-white/10 rounded-lg transition-colors"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-4 h-4" />
                             </button>
                         </div>
+                        <p className="text-xs text-gray-400 mt-1">Watch video & update details</p>
+                    </div>
 
-                        <p className="text-sm text-gray-400 mb-6">Watch the video and update vehicle details</p>
-
+                    {/* Content - Scrollable if needed */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
                         {/* Car 1 */}
-                        <div className="mb-6">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-base font-semibold text-blue-400">Car 1</h3>
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-sm font-semibold text-blue-400">Car 1</h3>
                                 <button
                                     onClick={handleCar1Cammer}
-                                    className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-all ${
-                                        car1IsCammer
-                                            ? 'bg-blue-500 text-white ring-2 ring-blue-400'
-                                            : 'bg-zinc-800 hover:bg-zinc-700 text-gray-300'
+                                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-xs transition-all ${
+                                        car1IsCammer ? 'bg-blue-500 text-white ring-1 ring-blue-400' : 'bg-zinc-800 hover:bg-zinc-700 text-gray-300'
                                     }`}
                                 >
                                     <Video className="w-3 h-3" />
-                                    Cammer
+                                    {car1IsCammer ? '✓ Cammer' : 'Cammer'}
                                 </button>
                             </div>
                             
-                            <div className="mb-4">
-                                <label className="text-xs text-gray-400 mb-2 block uppercase tracking-wide">Color</label>
-                                <div className="grid grid-cols-3 gap-1.5">
+                            <div className="mb-3">
+                                <label className="text-[10px] text-gray-400 mb-1 block uppercase tracking-wide">Color</label>
+                                <div className="grid grid-cols-3 gap-1">
                                     {COLORS.map((color) => (
                                         <button
                                             key={color}
-                                            onClick={() => {
-                                                setCar1Color(color);
-                                                setCar1IsCammer(false);
-                                            }}
+                                            onClick={() => { setCar1Color(color); setCar1IsCammer(false); }}
                                             disabled={car1IsCammer}
-                                            className={`px-2 py-1.5 rounded text-xs transition-colors ${
-                                                car1Color === color && !car1IsCammer
-                                                    ? 'bg-blue-500 text-white'
-                                                    : 'bg-zinc-800 hover:bg-zinc-700'
+                                            className={`px-1.5 py-1 rounded text-[10px] transition-colors ${
+                                                car1Color === color && !car1IsCammer ? 'bg-blue-500 text-white' : 'bg-zinc-800 hover:bg-zinc-700'
                                             } ${car1IsCammer ? 'opacity-30 cursor-not-allowed' : ''}`}
                                         >
                                             {color}
@@ -137,20 +146,15 @@ export default function FeedbackButton() {
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-400 mb-2 block uppercase tracking-wide">Type</label>
-                                <div className="grid grid-cols-2 gap-1.5">
+                                <label className="text-[10px] text-gray-400 mb-1 block uppercase tracking-wide">Type</label>
+                                <div className="grid grid-cols-2 gap-1">
                                     {TYPES.map((type) => (
                                         <button
                                             key={type}
-                                            onClick={() => {
-                                                setCar1Type(type);
-                                                setCar1IsCammer(false);
-                                            }}
+                                            onClick={() => { setCar1Type(type); setCar1IsCammer(false); }}
                                             disabled={car1IsCammer}
-                                            className={`px-2 py-1.5 rounded text-xs transition-colors ${
-                                                car1Type === type && !car1IsCammer
-                                                    ? 'bg-blue-500 text-white'
-                                                    : 'bg-zinc-800 hover:bg-zinc-700'
+                                            className={`px-1.5 py-1 rounded text-[10px] transition-colors ${
+                                                car1Type === type && !car1IsCammer ? 'bg-blue-500 text-white' : 'bg-zinc-800 hover:bg-zinc-700'
                                             } ${car1IsCammer ? 'opacity-30 cursor-not-allowed' : ''}`}
                                         >
                                             {type}
@@ -161,37 +165,30 @@ export default function FeedbackButton() {
                         </div>
 
                         {/* Car 2 */}
-                        <div className="mb-6">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-base font-semibold text-red-400">Car 2</h3>
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-sm font-semibold text-red-400">Car 2</h3>
                                 <button
                                     onClick={handleCar2Cammer}
-                                    className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-all ${
-                                        car2IsCammer
-                                            ? 'bg-red-500 text-white ring-2 ring-red-400'
-                                            : 'bg-zinc-800 hover:bg-zinc-700 text-gray-300'
+                                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-xs transition-all ${
+                                        car2IsCammer ? 'bg-red-500 text-white ring-1 ring-red-400' : 'bg-zinc-800 hover:bg-zinc-700 text-gray-300'
                                     }`}
                                 >
                                     <Video className="w-3 h-3" />
-                                    Cammer
+                                    {car2IsCammer ? '✓ Cammer' : 'Cammer'}
                                 </button>
                             </div>
                             
-                            <div className="mb-4">
-                                <label className="text-xs text-gray-400 mb-2 block uppercase tracking-wide">Color</label>
-                                <div className="grid grid-cols-3 gap-1.5">
+                            <div className="mb-3">
+                                <label className="text-[10px] text-gray-400 mb-1 block uppercase tracking-wide">Color</label>
+                                <div className="grid grid-cols-3 gap-1">
                                     {COLORS.map((color) => (
                                         <button
                                             key={color}
-                                            onClick={() => {
-                                                setCar2Color(color);
-                                                setCar2IsCammer(false);
-                                            }}
+                                            onClick={() => { setCar2Color(color); setCar2IsCammer(false); }}
                                             disabled={car2IsCammer}
-                                            className={`px-2 py-1.5 rounded text-xs transition-colors ${
-                                                car2Color === color && !car2IsCammer
-                                                    ? 'bg-red-500 text-white'
-                                                    : 'bg-zinc-800 hover:bg-zinc-700'
+                                            className={`px-1.5 py-1 rounded text-[10px] transition-colors ${
+                                                car2Color === color && !car2IsCammer ? 'bg-red-500 text-white' : 'bg-zinc-800 hover:bg-zinc-700'
                                             } ${car2IsCammer ? 'opacity-30 cursor-not-allowed' : ''}`}
                                         >
                                             {color}
@@ -201,20 +198,15 @@ export default function FeedbackButton() {
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-400 mb-2 block uppercase tracking-wide">Type</label>
-                                <div className="grid grid-cols-2 gap-1.5">
+                                <label className="text-[10px] text-gray-400 mb-1 block uppercase tracking-wide">Type</label>
+                                <div className="grid grid-cols-2 gap-1">
                                     {TYPES.map((type) => (
                                         <button
                                             key={type}
-                                            onClick={() => {
-                                                setCar2Type(type);
-                                                setCar2IsCammer(false);
-                                            }}
+                                            onClick={() => { setCar2Type(type); setCar2IsCammer(false); }}
                                             disabled={car2IsCammer}
-                                            className={`px-2 py-1.5 rounded text-xs transition-colors ${
-                                                car2Type === type && !car2IsCammer
-                                                    ? 'bg-red-500 text-white'
-                                                    : 'bg-zinc-800 hover:bg-zinc-700'
+                                            className={`px-1.5 py-1 rounded text-[10px] transition-colors ${
+                                                car2Type === type && !car2IsCammer ? 'bg-red-500 text-white' : 'bg-zinc-800 hover:bg-zinc-700'
                                             } ${car2IsCammer ? 'opacity-30 cursor-not-allowed' : ''}`}
                                         >
                                             {type}
@@ -224,30 +216,32 @@ export default function FeedbackButton() {
                             </div>
                         </div>
 
-                        {/* Submit Button */}
-                        <button
-                            onClick={handleSubmit}
-                            disabled={!car1Color || !car1Type || !car2Color || !car2Type}
-                            className="w-full py-2.5 bg-white text-black rounded-lg font-bold hover:bg-gray-200 transition-colors mb-4 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                        >
-                            Submit Correction
-                        </button>
-
-                        {/* Remove Video Section */}
-                        <div className="pt-4 border-t border-white/20">
-                            <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Remove Video</p>
-                            <div className="grid grid-cols-2 gap-1.5">
+                        {/* Remove Video */}
+                        <div className="pt-3 border-t border-white/20">
+                            <label className="text-[10px] text-gray-400 mb-1 block uppercase tracking-wide">Remove Video</label>
+                            <div className="grid grid-cols-2 gap-1">
                                 {REMOVE_REASONS.map((reason) => (
                                     <button
                                         key={reason}
                                         onClick={() => handleRemove(reason)}
-                                        className="px-2 py-1.5 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 rounded text-xs transition-colors"
+                                        className="px-1.5 py-1 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 rounded text-[10px] transition-colors"
                                     >
                                         {reason}
                                     </button>
                                 ))}
                             </div>
                         </div>
+                    </div>
+
+                    {/* Footer - Fixed */}
+                    <div className="flex-none p-4 border-t border-white/20">
+                        <button
+                            onClick={handleSubmit}
+                            disabled={!car1Color || !car1Type || !car2Color || !car2Type}
+                            className="w-full py-2 bg-white text-black rounded-lg font-bold hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        >
+                            Submit Correction
+                        </button>
                     </div>
                 </div>
             )}
