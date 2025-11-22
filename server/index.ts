@@ -48,10 +48,19 @@ nextApp.prepare()
             }
         });
 
-        // Vote tracking
-        const votesFilePath = path.join(__dirname, 'votes.json');
+        // Vote tracking - path works for both dev and production
+        const votesFilePath = dev 
+            ? path.join(process.cwd(), 'server', 'votes.json')
+            : path.join(__dirname, '..', 'server', 'votes.json');
+        
+        console.log('[VOTES] Loading from:', votesFilePath);
+        
         if (!fs.existsSync(votesFilePath)) {
+            console.log('[VOTES] File not found, creating empty votes.json');
             fs.writeFileSync(votesFilePath, JSON.stringify({}));
+        } else {
+            const votesData = JSON.parse(fs.readFileSync(votesFilePath, 'utf8'));
+            console.log('[VOTES] Loaded', Object.keys(votesData).length, 'scenarios');
         }
 
         // Vote API

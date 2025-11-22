@@ -7,7 +7,6 @@ import VotingPanel from '@/components/game/VotingPanel';
 import ResultOverlay from '@/components/game/ResultOverlay';
 import FeedbackButton from '@/components/game/FeedbackButton';
 import OnlineUsersTracker from '@/components/OnlineUsersTracker';
-import ReactionButtons from '@/components/game/ReactionButtons';
 
 export default function Home() {
     const shuffleScenarios = useGameStore((state) => state.shuffleScenarios);
@@ -47,9 +46,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-
-            {/* Reaction Buttons - Fixed position bottom right */}
-            <ReactionButtons />
         </main>
     );
 }
