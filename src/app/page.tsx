@@ -16,21 +16,21 @@ export default function Home() {
 
     return (
         <main className="h-screen w-screen bg-black text-white font-mono overflow-hidden flex flex-col">
-            <div className="flex-1 flex flex-col w-full h-full max-w-5xl mx-auto p-4 md:p-6 min-h-0">
+            <div className="flex-1 flex flex-col w-full h-full max-w-5xl mx-auto p-2 sm:p-4 md:p-6 min-h-0">
                 {/* Header - Fixed Height */}
-                <header className="flex-none flex items-center justify-between pb-4 mb-4 border-b border-white/20">
-                    <div className="flex items-center gap-3">
-                        <h1 className="text-2xl font-bold tracking-tight uppercase">Dashcam Judge</h1>
+                <header className="flex-none flex items-center justify-between pb-2 sm:pb-4 mb-2 sm:mb-4 border-b border-white/20">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight uppercase">Dashcam Judge</h1>
                     </div>
-                    <div className="text-sm text-gray-500 uppercase">
+                    <div className="text-xs sm:text-sm text-gray-500 uppercase">
                         v1.0
                     </div>
                 </header>
 
                 {/* Content Area - Fills remaining space */}
-                <div className="flex-1 flex flex-col min-h-0 gap-4">
+                <div className="flex-1 flex flex-col min-h-0 gap-2 sm:gap-4">
                     {/* Video Container - Takes all available space */}
-                    <div className="flex-1 min-h-0 relative bg-zinc-900/50 rounded-2xl border border-white/10 overflow-hidden">
+                    <div className="flex-1 min-h-0 relative bg-zinc-900/50 rounded-lg sm:rounded-2xl border border-white/10 overflow-hidden">
                         <VideoPlayer className="absolute inset-0 w-full h-full" />
                     </div>
 

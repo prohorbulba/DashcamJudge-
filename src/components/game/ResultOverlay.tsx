@@ -63,7 +63,7 @@ export default function ResultOverlay() {
 
     return (
         <div className="w-full max-w-4xl mx-auto animate-in fade-in duration-500">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
                 {renderCard('cammer', 'Cammer', Video)}
                 {renderCard('other', 'Other Party', AlertTriangle)}
                 {renderCard('both', 'Both', ThumbsDown)}
