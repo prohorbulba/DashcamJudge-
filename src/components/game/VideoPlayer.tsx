@@ -16,10 +16,33 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
 
     useEffect(() => {
         if (videoRef.current) {
-            const playPromise = videoRef.current.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {});
-            }
+            // Try to play immediately
+            const playVideo = () => {
+                if (videoRef.current) {
+                    videoRef.current.muted = true; // Mute first for autoplay
+                    const playPromise = videoRef.current.play();
+                    if (playPromise !== undefined) {
+                        playPromise
+                            .then(() => {
+                                console.log('Autoplay started');
+                            })
+                            .catch(() => {
+                                // If autoplay fails, try clicking programmatically
+                                setTimeout(() => {
+                                    if (videoRef.current && videoRef.current.paused) {
+                                        videoRef.current.click();
+                                        videoRef.current.play().catch(() => {});
+                                    }
+                                }, 100);
+                            });
+                    }
+                }
+            };
+
+            // Try multiple times to ensure playback
+            playVideo();
+            setTimeout(playVideo, 100);
+            setTimeout(playVideo, 300);
         }
     }, [scenario.id]);
 
@@ -28,7 +51,7 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
             {isYouTube ? (
                 <iframe
                     key={scenario.id}
-                    src={`https://www.youtube.com/embed/${getYouTubeId(scenario.videoUrl)}?autoplay=1&mute=0&loop=1`}
+                    src={`https://www.youtube.com/embed/${getYouTubeId(scenario.videoUrl)}?autoplay=1&mute=1&loop=1`}
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -40,6 +63,7 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
                     src={scenario.videoUrl}
                     className="w-full h-full object-contain"
                     controls
+                    muted
                     autoPlay
                     playsInline
                     loop
