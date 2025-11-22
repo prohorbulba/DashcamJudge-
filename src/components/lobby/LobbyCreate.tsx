@@ -7,17 +7,17 @@ import { useRouter } from 'next/navigation';
 export default function LobbyCreate() {
     const [name, setName] = useState('');
     const createRoom = useSocketStore((state) => state.createRoom);
-    const roomId = useSocketStore((state) => state.roomId);
+    const room = useSocketStore((state) => state.room);
     const router = useRouter();
 
     const handleCreate = () => {
         if (!name.trim()) return;
-        createRoom(name);
+        createRoom(name, 50); // Default to 50 scenarios for now, or make configurable
     };
 
     // Redirect to lobby when room is created
-    if (roomId) {
-        router.push(`/lobby/${roomId}`);
+    if (room?.id) {
+        router.push(`/lobby/${room.id}`);
     }
 
     return (

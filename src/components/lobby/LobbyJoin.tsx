@@ -8,7 +8,7 @@ export default function LobbyJoin() {
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
     const joinRoom = useSocketStore((state) => state.joinRoom);
-    const roomId = useSocketStore((state) => state.roomId);
+    const room = useSocketStore((state) => state.room);
     const router = useRouter();
 
     const handleJoin = () => {
@@ -17,8 +17,8 @@ export default function LobbyJoin() {
     };
 
     // Redirect to lobby when joined
-    if (roomId) {
-        router.push(`/lobby/${roomId}`);
+    if (room?.id) {
+        router.push(`/lobby/${room.id}`);
     }
 
     return (
