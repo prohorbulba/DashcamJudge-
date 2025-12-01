@@ -173,27 +173,33 @@ nextApp.prepare()
 
         // Track REAL online users + fake base
         let realOnlineUsers = 0;
-        const FAKE_BASE_USERS = 200; // Base fake users
         
-        // Get fluctuating fake user count (200 +/- 50)
-        const getFakeUserCount = () => {
-            const fluctuation = Math.floor(Math.random() * 100) - 50; // -50 to +50
-            return Math.max(150, FAKE_BASE_USERS + fluctuation + realOnlineUsers);
-        };
-
-        // Broadcast updated user count every 3-8 seconds
+        // Stable fake user count - only changes slowly over time
+        // Start with a random base between 180-220
+        let currentFakeUsers = 180 + Math.floor(Math.random() * 40);
+        
+        // Slowly drift the fake user count every 10-30 seconds
         setInterval(() => {
-            const count = getFakeUserCount();
-            io.emit('online_users', count);
-        }, 3000 + Math.random() * 5000);
+            // Small random change: -3 to +3
+            const drift = Math.floor(Math.random() * 7) - 3;
+            currentFakeUsers = Math.max(150, Math.min(250, currentFakeUsers + drift));
+            
+            // Broadcast updated count to all users
+            const totalUsers = currentFakeUsers + realOnlineUsers;
+            io.emit('online_users', totalUsers);
+        }, 10000 + Math.random() * 20000); // Every 10-30 seconds
+
+        // Get current user count (stable, doesn't change on each call)
+        const getUserCount = () => currentFakeUsers + realOnlineUsers;
 
         // Socket.io for multiplayer and online tracking
         io.on('connection', (socket) => {
             console.log('[SOCKET] User connected:', socket.id);
             realOnlineUsers++;
             
-            // Send current count immediately on connect
-            socket.emit('online_users', getFakeUserCount());
+            // Send current count immediately on connect (same count for everyone)
+            const count = getUserCount();
+            io.emit('online_users', count); // Broadcast to ALL so everyone sees the same
 
             socket.on('create_room', ({ name, totalScenarios }: { name: string, totalScenarios: number }) => {
                 const roomId = generateRoomId();
@@ -288,7 +294,7 @@ nextApp.prepare()
             socket.on('disconnect', () => {
                 console.log('[SOCKET] User disconnected:', socket.id);
                 realOnlineUsers = Math.max(0, realOnlineUsers - 1);
-                io.emit('online_users', getFakeUserCount());
+                io.emit('online_users', getUserCount());
                 
                 rooms.forEach((room, roomId) => {
                     const index = room.players.findIndex(p => p.id === socket.id);
