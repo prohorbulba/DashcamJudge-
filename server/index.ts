@@ -49,37 +49,53 @@ nextApp.prepare()
         });
 
         // Vote tracking - path works for both dev and production
-        const votesFilePath = dev 
-            ? path.join(process.cwd(), 'server', 'votes.json')
-            : path.join(__dirname, '..', 'server', 'votes.json');
+        const votesFilePath = path.join(process.cwd(), 'server', 'votes.json');
         
         console.log('[VOTES] Loading from:', votesFilePath);
+        console.log('[VOTES] Current working directory:', process.cwd());
         
+        // Initialize votes file if it doesn't exist
         if (!fs.existsSync(votesFilePath)) {
             console.log('[VOTES] File not found, creating empty votes.json');
+            // Ensure directory exists
+            const dir = path.dirname(votesFilePath);
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
             fs.writeFileSync(votesFilePath, JSON.stringify({}));
         } else {
             const votesData = JSON.parse(fs.readFileSync(votesFilePath, 'utf8'));
-            console.log('[VOTES] Loaded', Object.keys(votesData).length, 'scenarios');
+            console.log('[VOTES] Loaded', Object.keys(votesData).length, 'scenarios with votes');
         }
 
-        // Vote API
+        // Vote API - CUMULATIVE votes saved to file
         app.post('/api/vote', (req, res) => {
             try {
                 const { scenarioId, vote } = req.body;
+                console.log('[VOTE] Received:', scenarioId, vote);
                 
                 if (!scenarioId || !vote || !['cammer', 'other', 'both'].includes(vote)) {
                     return res.status(400).json({ error: 'Invalid vote data' });
                 }
 
-                const votesData = JSON.parse(fs.readFileSync(votesFilePath, 'utf8'));
+                // Read current votes from file
+                let votesData: Record<string, { cammer: number; other: number; both: number }> = {};
+                try {
+                    votesData = JSON.parse(fs.readFileSync(votesFilePath, 'utf8'));
+                } catch (e) {
+                    console.log('[VOTE] Could not read votes file, starting fresh');
+                    votesData = {};
+                }
                 
+                // Initialize scenario if not exists
                 if (!votesData[scenarioId]) {
                     votesData[scenarioId] = { cammer: 0, other: 0, both: 0 };
                 }
                 
-                votesData[scenarioId][vote]++;
+                // Increment vote count
+                votesData[scenarioId][vote as 'cammer' | 'other' | 'both']++;
                 
+                // Calculate percentages
                 const total = votesData[scenarioId].cammer + votesData[scenarioId].other + votesData[scenarioId].both;
                 const percentages = {
                     cammer: total > 0 ? Math.round((votesData[scenarioId].cammer / total) * 100) : 0,
@@ -87,11 +103,13 @@ nextApp.prepare()
                     both: total > 0 ? Math.round((votesData[scenarioId].both / total) * 100) : 0
                 };
                 
+                // Save back to file
                 fs.writeFileSync(votesFilePath, JSON.stringify(votesData, null, 2));
+                console.log('[VOTE] Saved! Total for', scenarioId, ':', total, 'votes. Percentages:', percentages);
                 
                 res.json({ success: true, percentages });
             } catch (error) {
-                console.error('Vote error:', error);
+                console.error('[VOTE] Error:', error);
                 res.status(500).json({ error: 'Failed to save vote' });
             }
         });
@@ -99,9 +117,18 @@ nextApp.prepare()
         app.get('/api/votes/:scenarioId', (req, res) => {
             try {
                 const { scenarioId } = req.params;
-                const votesData = JSON.parse(fs.readFileSync(votesFilePath, 'utf8'));
+                console.log('[VOTES GET]', scenarioId);
+                
+                let votesData: Record<string, { cammer: number; other: number; both: number }> = {};
+                try {
+                    votesData = JSON.parse(fs.readFileSync(votesFilePath, 'utf8'));
+                } catch (e) {
+                    console.log('[VOTES GET] Could not read file');
+                    votesData = {};
+                }
                 
                 if (!votesData[scenarioId]) {
+                    console.log('[VOTES GET] No votes for', scenarioId);
                     return res.json({ cammer: 0, other: 0, both: 0 });
                 }
                 
@@ -112,9 +139,10 @@ nextApp.prepare()
                     both: total > 0 ? Math.round((votesData[scenarioId].both / total) * 100) : 0
                 };
                 
+                console.log('[VOTES GET] Returning:', percentages);
                 res.json(percentages);
             } catch (error) {
-                console.error('Get votes error:', error);
+                console.error('[VOTES GET] Error:', error);
                 res.status(500).json({ error: 'Failed to get votes' });
             }
         });
@@ -143,14 +171,29 @@ nextApp.prepare()
             }
         });
 
-        // Track online users
-        let onlineUsers = 0;
+        // Track REAL online users + fake base
+        let realOnlineUsers = 0;
+        const FAKE_BASE_USERS = 200; // Base fake users
+        
+        // Get fluctuating fake user count (200 +/- 50)
+        const getFakeUserCount = () => {
+            const fluctuation = Math.floor(Math.random() * 100) - 50; // -50 to +50
+            return Math.max(150, FAKE_BASE_USERS + fluctuation + realOnlineUsers);
+        };
+
+        // Broadcast updated user count every 3-8 seconds
+        setInterval(() => {
+            const count = getFakeUserCount();
+            io.emit('online_users', count);
+        }, 3000 + Math.random() * 5000);
 
         // Socket.io for multiplayer and online tracking
         io.on('connection', (socket) => {
-            console.log('User connected:', socket.id);
-            onlineUsers++;
-            io.emit('online_users', onlineUsers);
+            console.log('[SOCKET] User connected:', socket.id);
+            realOnlineUsers++;
+            
+            // Send current count immediately on connect
+            socket.emit('online_users', getFakeUserCount());
 
             socket.on('create_room', ({ name, totalScenarios }: { name: string, totalScenarios: number }) => {
                 const roomId = generateRoomId();
@@ -243,8 +286,9 @@ nextApp.prepare()
             });
 
             socket.on('disconnect', () => {
-                onlineUsers--;
-                io.emit('online_users', onlineUsers);
+                console.log('[SOCKET] User disconnected:', socket.id);
+                realOnlineUsers = Math.max(0, realOnlineUsers - 1);
+                io.emit('online_users', getFakeUserCount());
                 
                 rooms.forEach((room, roomId) => {
                     const index = room.players.findIndex(p => p.id === socket.id);
